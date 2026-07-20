@@ -425,7 +425,7 @@ func (*githubTracesReceiver) createStepSpan(
 		attrs.PutStr(AttributeCICDPipelineTaskRunStatus, AttributeCICDPipelineTaskRunStatusFailure)
 		span.Status().SetCode(ptrace.StatusCodeError)
 	case "skipped":
-		attrs.PutStr(AttributeCICDPipelineTaskRunStatus, AttributeCICDPipelineTaskRunStatusFailure)
+		attrs.PutStr(AttributeCICDPipelineTaskRunStatus, AttributeCICDPipelineTaskRunStatusSkip)
 		span.Status().SetCode(ptrace.StatusCodeUnset)
 	case "cancelled":
 		attrs.PutStr(AttributeCICDPipelineTaskRunStatus, AttributeCICDPipelineTaskRunStatusCancellation)

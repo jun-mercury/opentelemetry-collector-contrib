@@ -375,20 +375,29 @@ func TestCreateStepSpans(t *testing.T) {
 			validateFn: func(t *testing.T, spans ptrace.SpanSlice) {
 				require.Equal(t, 3, spans.Len())
 
+				taskRunStatus := func(span ptrace.Span) string {
+					status, exists := span.Attributes().Get(AttributeCICDPipelineTaskRunStatus)
+					require.True(t, exists)
+					return status.Str()
+				}
+
 				// Setup step
 				setup := spans.At(0)
 				require.Equal(t, "Setup", setup.Name())
 				require.Equal(t, ptrace.StatusCodeOk, setup.Status().Code())
+				require.Equal(t, AttributeCICDPipelineTaskRunStatusSuccess, taskRunStatus(setup))
 
 				// Build step
 				build := spans.At(1)
 				require.Equal(t, "Build", build.Name())
 				require.Equal(t, ptrace.StatusCodeError, build.Status().Code())
+				require.Equal(t, AttributeCICDPipelineTaskRunStatusFailure, taskRunStatus(build))
 
 				// Test step
 				test := spans.At(2)
 				require.Equal(t, "Test", test.Name())
 				require.Equal(t, ptrace.StatusCodeUnset, test.Status().Code())
+				require.Equal(t, AttributeCICDPipelineTaskRunStatusSkip, taskRunStatus(test))
 			},
 		},
 		{
